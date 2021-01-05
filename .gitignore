@@ -1,0 +1,6 @@
+venv
+*.zip
+*.bin
+test.txt
+cwa_diagnose_keys.txt
+**/__pycache__
