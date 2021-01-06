@@ -16,6 +16,7 @@ host = 'https://svc90.main.px.t-online.de'
 def main():
     # download the key files from the server:
     for country in ['DE', 'EUR']:
+        print(f'downloading missing files ({country})...')
         get_all_available_files_for_country(country)
     # parse daily key files and print number of keys
     for country in ['DE', 'EUR']:
@@ -121,6 +122,7 @@ def filename_for_keys(country, date, hour=None):
 def get_key_file(country, date, hour=None):
     path = path_for_keys(country, date, hour)
     if (not os.path.exists(path / 'export.bin')):
+        progress(country, date, hour)
         uri = uri_for_keys(country, date, hour)
         r = requests.get(uri)
         if (r.status_code == 200):
@@ -128,6 +130,11 @@ def get_key_file(country, date, hour=None):
             zipfile.extract('export.bin', path)
         else:
             print(f'Error:{r.status_code}:{country}:{date}:{hour}')
+
+
+def progress(country, date, hour):
+    if hour is None:
+        print(f'.. {country} {date} ..')
 
 
 def get_daily_key_count(country, day):
