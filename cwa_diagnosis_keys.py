@@ -54,6 +54,8 @@ def check_key_numbers_for_country(country):
 
 
 def check_key_numbers_for_country_of_day(country, day):
+    if not all_hourly_files_exist(country, day):
+        return True
     daily_key_count = get_daily_key_count(country, day)
     hourly_key_counts = get_hourly_key_counts(country, day)
 #    print(f'{country}:{day}:')
@@ -143,6 +145,13 @@ def get_daily_key_count(country, day):
 
 def get_hourly_key_counts(country, day):
     return [KeyBundle(filename_for_keys(country, day, hour)).number_of_keys() for hour in range(24)]
+
+
+def all_hourly_files_exist(country, day):
+    for hour in range(24):
+        if not Path(filename_for_keys(country, day, hour)).exists():
+            return False
+    return True
 
 
 def check_risk_levels(country, day):
