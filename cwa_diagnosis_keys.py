@@ -1,5 +1,6 @@
 ## Download and extract a file with diagnose keys from the cwa server.
 
+import datetime
 from io import BytesIO
 import json
 import os
@@ -166,5 +167,9 @@ def check_risk_levels(country, day):
 
 #### main
 if __name__ == "__main__":
+    starttime = datetime.datetime.now()
     # execute only if run as a script
     main()
+    stoptime = datetime.datetime.now()
+    execution_time = stoptime - starttime
+    print(f'execution time = {execution_time}')
