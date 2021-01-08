@@ -49,18 +49,23 @@ def print_daily_key_numbers_for_country(country):
 
 def check_key_numbers_for_country(country):
     for day in available_days(country):
-        if not check_key_numbers_for_country_of_day(country, day):
-            print(f'mismatch key count: {country}:{day}')
+        check_key_numbers_for_country_of_day(country, day)
 
 
 def check_key_numbers_for_country_of_day(country, day):
     if not all_hourly_files_exist(country, day):
+        # do not check in this case
         return True
     daily_key_count = get_daily_key_count(country, day)
     hourly_key_counts = get_hourly_key_counts(country, day)
-#    print(f'{country}:{day}:')
-#    print(daily_key_count, hourly_key_counts)
-    return (daily_key_count == sum(hourly_key_counts))
+    if daily_key_count == sum(hourly_key_counts):
+        return True
+    else:
+        print(f'mismatch key count:{country}:{day}')
+        print(f'  daily count = {daily_key_count}')
+        print(f'  hourly counts = {hourly_key_counts}')
+        print(f'  sum of hourly counts = {sum(hourly_key_counts)}')
+        return False
 
 
 def available_days(country):
