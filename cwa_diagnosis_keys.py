@@ -30,16 +30,31 @@ def main():
         check_risk_levels('EUR', day)
 
 
-# it fetches hourly files only for full days
+# it fetches hourly files: for all full days, and then for the next day
 def get_all_available_files_for_country(country):
-    for day in available_days(country):
+    days = available_days(country)
+    for day in days:
         get_all_available_files_for_country_of_day(country, day)
+    get_available_hourly_files(country, calc_next_day(days[-1]))
+
+
+# input: a day (ISO format) / output: next day (ISO format)
+def calc_next_day(day_string):
+    day = datetime.date.fromisoformat(day_string)
+    delta = datetime.timedelta(days=1)
+    return str(day + delta)
 
 
 def get_all_available_files_for_country_of_day(country, day):
     get_key_file(country, day)
-    for hour in available_hours(country, day):
-        get_key_file(country, day, hour)
+    get_available_hourly_files(country, day)
+
+
+def get_available_hourly_files(country, day):
+    hours = available_hours(country, day)
+    if hours:
+        for hour in hours:
+            get_key_file(country, day, hour)
 
 
 def print_daily_key_numbers_for_country(country):
@@ -62,7 +77,7 @@ def check_key_numbers_for_country_of_day(country, day):
     if daily_key_count == sum(hourly_key_counts):
         return True
     else:
-        print(f'mismatch key count:{country}:{day}')
+        print(f'\nmismatch key count:{country}:{day}')
         print(f'  daily count = {daily_key_count}')
         print(f'  hourly counts = {hourly_key_counts}')
         print(f'  sum of hourly counts = {sum(hourly_key_counts)}')
@@ -79,6 +94,8 @@ def available_hours(country, date):
 
 def available_items(uri):
     r = requests.get(uri)
+    if r.status_code != 200 or not len(r.text):
+        return None
     return json.loads(r.text)
 
 
@@ -129,7 +146,7 @@ def filename_for_keys(country, date, hour=None):
 
 def get_key_file(country, date, hour=None):
     path = path_for_keys(country, date, hour)
-    if (not os.path.exists(path / 'export.bin')):
+    if not os.path.exists(path / 'export.bin'):
         progress(country, date, hour)
         uri = uri_for_keys(country, date, hour)
         r = requests.get(uri)
@@ -172,4 +189,4 @@ if __name__ == "__main__":
     main()
     stoptime = datetime.datetime.now()
     execution_time = stoptime - starttime
-    print(f'execution time = {execution_time}')
+    print(f'\nexecution time = {execution_time}')
