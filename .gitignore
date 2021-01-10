@@ -3,4 +3,5 @@ venv
 *.bin
 test.txt
 cwa_diagnose_keys.txt
+snippets.py
 **/__pycache__
