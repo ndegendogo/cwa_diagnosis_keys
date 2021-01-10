@@ -99,15 +99,22 @@ def available_items(uri):
     return json.loads(r.text)
 
 
+def uri_for_country(country):
+    # uri = '%s/version/v1/diagnosis-keys/country/%s' % (host, country)        ## old-style formatting (python 2)
+    # uri = '{}/version/v1/diagnosis-keys/country/{}'.format(host, country)    ## python-3 style
+    # uri = f'{host}/version/v1/diagnosis-keys/country/{country}'              ## >= python-3.6
+    return f'{host}/version/v1/diagnosis-keys/country/{country}'
+
+
 def uri_for_days(country):
     # uri = '%s/version/v1/diagnosis-keys/country/%s/date' % (host, country)        ## old-style formatting (python 2)
     # uri = '{}/version/v1/diagnosis-keys/country/{}/date'.format(host, country)    ## python-3 style
     # uri = f'{host}/version/v1/diagnosis-keys/country/{country}/date'              ## >= python-3.6
-    return f'{host}/version/v1/diagnosis-keys/country/{country}/date'
+    return f'{uri_for_country(country)}/date'
 
 
 def uri_for_hours(country, date):
-    return f'{host}/version/v1/diagnosis-keys/country/{country}/date/{date}/hour'
+    return f'{uri_for_country(country)}/date/{date}/hour'
 
 
 def uri_for_keys(country, date, hour=None):
@@ -118,11 +125,11 @@ def uri_for_keys(country, date, hour=None):
 
 
 def uri_for_keys_by_date(country, date):
-    return f'{host}/version/v1/diagnosis-keys/country/{country}/date/{date}'
+    return f'{uri_for_country(country)}/date/{date}'
 
 
 def uri_for_keys_by_hour(country, date, hour):
-    return f'{host}/version/v1/diagnosis-keys/country/{country}/date/{date}/hour/{hour}'
+    return f'{uri_for_country(country)}/date/{date}/hour/{hour}'
 
 
 def path_for_keys(country, date, hour=None):
@@ -140,7 +147,7 @@ def path_for_hourly_keys(country, date, hour):
     return Path(country) / date / str(hour)
 
 
-def filename_for_keys(country, date, hour=None):
+def file_for_keys(country, date, hour=None):
     return path_for_keys(country, date, hour) / 'export.bin'
 
 
@@ -163,22 +170,22 @@ def progress(country, date, hour):
 
 
 def get_daily_key_count(country, day):
-    return KeyBundle(filename_for_keys(country, day)).number_of_keys()
+    return KeyBundle(file_for_keys(country, day)).number_of_keys()
 
 
 def get_hourly_key_counts(country, day):
-    return [KeyBundle(filename_for_keys(country, day, hour)).number_of_keys() for hour in range(24)]
+    return [KeyBundle(file_for_keys(country, day, hour)).number_of_keys() for hour in range(24)]
 
 
 def all_hourly_files_exist(country, day):
     for hour in range(24):
-        if not Path(filename_for_keys(country, day, hour)).exists():
+        if not file_for_keys(country, day, hour).exists():
             return False
     return True
 
 
 def check_risk_levels(country, day):
-    bundle = KeyBundle(filename_for_keys(country, day))
+    bundle = KeyBundle(file_for_keys(country, day))
     bundle.check_risk_levels()
 
 
