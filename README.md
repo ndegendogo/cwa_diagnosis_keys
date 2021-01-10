@@ -23,7 +23,7 @@ It parses the daily keys files and prints the number of keys in these files.
 `python3 cwa_diagnosis_keys.py`
 
 
-###Maintenance
+### Maintenance
 
 
 ### Data Format and References
@@ -47,6 +47,8 @@ See also [this discussion](https://github.com/corona-warn-app/cwa-documentation/
 **Key Package:** The structure of a key package was specified by Google and Apple
 and is documented [here](https://developers.google.com/android/exposure-notifications/exposure-key-file-format#file-format) 
 and [here](https://developer.apple.com/documentation/exposurenotification/setting_up_a_key_server).
+
+*Work in Progress ... to be continued ...*
 
 
 
