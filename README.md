@@ -44,9 +44,17 @@ Since version 1.5, cwa gets the common key packages (`EUR` endpoints).
 The latter packages contain also the keys from the European Federation Gateway Service.
 See also [this discussion](https://github.com/corona-warn-app/cwa-documentation/issues/503).
 
-**Key Package:** The structure of a key package was specified by Google and Apple
+**Key Package:** 
+The structure of a key package was specified by Google and Apple
 and is documented [here](https://developers.google.com/android/exposure-notifications/exposure-key-file-format#file-format) 
 and [here](https://developer.apple.com/documentation/exposurenotification/setting_up_a_key_server).
+
+**Protocol Buffer Encoding:**
+The payload of a key data file is encoded as serialized protocol buffer message. 
+[See here](https://developers.google.com/protocol-buffers/docs/pythontutorial)
+for a good introduction into the idea, concept and tooling for working with protocol buffer encoded data.
+
+**Data Structure of a Key File:**
 
 *Work in Progress ... to be continued ...*
 
