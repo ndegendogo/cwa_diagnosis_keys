@@ -63,7 +63,7 @@ def print_all_key_numbers_for_country(country):
     for day in days:
         print(f'{day}: {get_daily_key_count(country, day)} keys')
     partial_day = calc_next_day(days[-1])
-    print(f'{partial_day}: {get_hourly_key_counts(country, partial_day)} keys')
+    print(f'{partial_day}: {get_all_hourly_key_counts(country, partial_day)} keys')
 
 
 def check_key_numbers_for_country(country):
@@ -73,7 +73,7 @@ def check_key_numbers_for_country(country):
 
 def check_key_numbers_for_country_of_day(country, day):
     daily_key_count = get_daily_key_count(country, day)
-    hourly_key_counts = get_hourly_key_counts(country, day)
+    hourly_key_counts = get_all_hourly_key_counts(country, day)
     if len(hourly_key_counts) < 24:
         # do not perform check for partial day
         return True
@@ -173,20 +173,28 @@ def progress(country, date, hour):
 
 
 def get_daily_key_count(country, day):
-    file = file_for_keys(country, day)
-    return get_key_count(file)
+    return get_key_count(file_for_keys(country, day))
 
 
-def get_hourly_key_counts(country, day):
+def get_all_hourly_key_counts(country, day):
     key_counts = []
     for hour in range(24):
-        file = file_for_keys(country, day, hour)
-        if file.exists():
-            key_counts.append(get_key_count(file))
+        count = get_hourly_key_count(country, day, hour)
+        if count != None:
+            key_counts.append(count)
     return key_counts
 
 
-# param file is a Path object
+# return number of keys, or None if the file does not exist
+def get_hourly_key_count(country, day, hour):
+    file = file_for_keys(country, day, hour)
+    if file.exists():
+        return get_key_count(file)
+    else:
+        return None
+
+
+# param file is an *existing* file, referenced as Path or by filename; return number of keys, possibly 0
 def get_key_count(file):
     return KeyBundle(file).number_of_keys()
 
