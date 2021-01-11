@@ -170,11 +170,23 @@ def progress(country, date, hour):
 
 
 def get_daily_key_count(country, day):
-    return KeyBundle(file_for_keys(country, day)).number_of_keys()
+    file = file_for_keys(country, day)
+    return get_key_count(file)
 
 
 def get_hourly_key_counts(country, day):
-    return [KeyBundle(file_for_keys(country, day, hour)).number_of_keys() for hour in range(24)]
+    hourly_counts = []
+    for hour in range(24):
+        file = file_for_keys(country, day, hour)
+        if file.exists():
+            key_count = get_key_count(file)
+            hourly_counts.append(key_count)
+    return hourly_counts
+
+
+# param file is a Path object
+def get_key_count(file):
+    return KeyBundle(file).number_of_keys()
 
 
 def all_hourly_files_exist(country, day):
