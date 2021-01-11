@@ -21,7 +21,7 @@ def main():
         get_all_available_files_for_country(country)
     # parse daily key files and print number of keys
     for country in ['DE', 'EUR']:
-        print_daily_key_numbers_for_country(country)
+        print_all_key_numbers_for_country(country)
     # check if number of keys match between daily and hourly files
     for country in ['DE', 'EUR']:
         check_key_numbers_for_country(country)
@@ -57,10 +57,13 @@ def get_available_hourly_files(country, day):
             get_key_file(country, day, hour)
 
 
-def print_daily_key_numbers_for_country(country):
+def print_all_key_numbers_for_country(country):
     print(country)
-    for day in available_days(country):
+    days = available_days(country)
+    for day in days:
         print(f'{day}: {get_daily_key_count(country, day)} keys')
+    partial_day = calc_next_day(days[-1])
+    print(f'{partial_day}: {get_hourly_key_counts(country, partial_day)} keys')
 
 
 def check_key_numbers_for_country(country):
@@ -69,11 +72,11 @@ def check_key_numbers_for_country(country):
 
 
 def check_key_numbers_for_country_of_day(country, day):
-    if not all_hourly_files_exist(country, day):
-        # do not check in this case
-        return True
     daily_key_count = get_daily_key_count(country, day)
     hourly_key_counts = get_hourly_key_counts(country, day)
+    if len(hourly_key_counts) < 24:
+        # do not perform check for partial day
+        return True
     if daily_key_count == sum(hourly_key_counts):
         return True
     else:
@@ -175,25 +178,17 @@ def get_daily_key_count(country, day):
 
 
 def get_hourly_key_counts(country, day):
-    hourly_counts = []
+    key_counts = []
     for hour in range(24):
         file = file_for_keys(country, day, hour)
         if file.exists():
-            key_count = get_key_count(file)
-            hourly_counts.append(key_count)
-    return hourly_counts
+            key_counts.append(get_key_count(file))
+    return key_counts
 
 
 # param file is a Path object
 def get_key_count(file):
     return KeyBundle(file).number_of_keys()
-
-
-def all_hourly_files_exist(country, day):
-    for hour in range(24):
-        if not file_for_keys(country, day, hour).exists():
-            return False
-    return True
 
 
 def check_risk_levels(country, day):
