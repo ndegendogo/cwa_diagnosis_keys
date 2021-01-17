@@ -22,12 +22,21 @@ def main():
     # parse daily key files and print number of keys
     for country in ['DE', 'EUR']:
         print_all_key_numbers_for_country(country)
+#    print_additional_eur_numbers()
     # check if number of keys match between daily and hourly files
     for country in ['DE', 'EUR']:
         check_key_numbers_for_country(country)
     # check if the risk level is encoded consistently in (report type + days of symptoms onset)
     for day in available_days('EUR'):
         check_risk_levels('EUR', day)
+
+
+def print_additional_eur_numbers():
+    days = available_days('EUR')
+    for day in days:
+        eur = get_daily_key_count('EUR', day)
+        de = get_daily_key_count('DE', day)
+        print(f'{day}: diff = {eur - de} keys')
 
 
 # it fetches hourly files: for all full days, and then for the next day
