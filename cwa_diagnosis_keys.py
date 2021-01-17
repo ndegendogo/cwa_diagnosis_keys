@@ -105,10 +105,14 @@ def available_hours(country, date):
 
 
 def available_items(uri):
-    r = requests.get(uri)
-    if r.status_code != 200 or not len(r.text):
-        return None
-    return json.loads(r.text)
+    try:
+        r = requests.get(uri)
+        if r.status_code != 200 or not len(r.text):
+            return None
+        return json.loads(r.text)
+    except requests.exceptions.ConnectionError as N:
+        print(f'No connection to {uri} - please check your internet connection')
+        exit(1)
 
 
 def uri_for_country(country):
